@@ -2,19 +2,20 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/InterpreterMain.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/OpCodes.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/BytecodeTranslatorMain.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/OpCodes.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Compiler.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/InterpreterMain.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/BytecodeTranslator.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/BytecodeTranslatorMain.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/OpCodes.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Compiler.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/BytecodeTranslator.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/CompilerMain.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Compiler.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/OpCodes.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Interpreter.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Utils.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Interpreter.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/BytecodeTranslator.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/CompilerMain.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Compiler.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Interpreter.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/BytecodeTranslator.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Utils.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Interpreter.h" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
