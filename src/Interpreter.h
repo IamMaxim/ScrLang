@@ -5,6 +5,8 @@
 #include <stack>
 #include <vector>
 
+#define RES_SIZE 4096
+
 class Interpreter {
     typedef void (Interpreter::*opFunc)(void *data);
     struct Call {
@@ -17,6 +19,7 @@ class Interpreter {
         }
     };
 private:
+    void *res;
     std::map<uint8_t, opFunc> operations;
     std::stack<float> stack;
     std::vector<Call> callList;

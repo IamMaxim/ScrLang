@@ -23,7 +23,7 @@ void BytecodeTranslator::translate(std::ifstream &i, std::ofstream &o) {
         if (s.empty()) continue;
         std::vector<std::string> tokens = split(s);
         uint8_t opcode = op::ops[tokens[0]];
-        printf("writing %s -> %i\n", tokens[0].c_str(), opcode);
+        printf("writing %s -> %i\n", s.c_str(), opcode);
         o.write((char*) &opcode, 1);
         for (int i = 1; i < tokens.size(); i++) {
             float f = std::stof(tokens[i]);

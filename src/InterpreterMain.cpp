@@ -2,6 +2,9 @@
 #include "Interpreter.h"
 #include "Utils.h"
 
+#define I_DEBUG
+//#define MEASURE_TIME
+//#define MEASURE_TIME_MILLIS
 
 int main(int argc, char *argv[]) {
     std::string filename;
@@ -18,17 +21,27 @@ int main(int argc, char *argv[]) {
     interpreter.load();
 
 #ifdef MEASURE_TIME
-    long startTime = getCurrentTime();
-    for (int i = 0; i < 10000000; i++) {
-        interpreter.setOpPos(0);
+#ifdef MEASURE_TIME_MILLIS
+    long time = getCurrentTime();
+#else
+    clock_t time = clock();
+#endif
+    for (int i = 0; i < 10000; i++) {
+        for (int j = 0; j < 10000; j++) {
+            interpreter.setOpPos(0);
 #endif
 
-    interpreter.run();
+            interpreter.run();
 
 #ifdef MEASURE_TIME
+        }
     }
-    long delta = getCurrentTime() - startTime;
-    printf("completed 10000000 iterations in %li ms\n", delta);
+#ifdef MEASURE_TIME_MILLIS
+    time = getCurrentTime() - time;
+#else
+    time = clock() - time;
+#endif
+    printf("completed 100000000 iterations in %li\n", time);
 #endif
 
     return 0;
