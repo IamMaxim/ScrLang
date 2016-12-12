@@ -5,32 +5,37 @@
 #include "Interpreter.h"
 #include "Utils.h"
 
+inline void* Interpreter::stackAt(unsigned int offset) {
+    return (void *)((uintptr_t)stack + offset);
+}
+
 void Interpreter::add() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 + f1);
+    stackPush(f2 + f1);
 }
 
 void Interpreter::push(void *data) {
     float f;
     memcpy(&f, data, 4);
-    stack.push(f);
+    stackPush(f);
 }
 
 void Interpreter::print() {
-    std::stack<float> st = stack;
+    int pos = stackPos;
     std::cout << "^^^^^^stack^^^^^^\n";
-    while (st.size() > 0) {
-        float f = st.top();
+    while (pos > 0) {
+        float f = *stackTop();
         std::cout << f << '\n';
-        st.pop();
+        pos-=4;
     }
     std::cout << "^^^^^^^^^^^^^^^^^\n";
 }
 
 Interpreter::Interpreter(std::ifstream &s) {
     this->s = &s;
+    stack = malloc(STACK_SIZE);
     res = malloc(RES_SIZE);
 
     operations[op::POP] = &Interpreter::pop;
@@ -56,64 +61,64 @@ void Interpreter::sub() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 - f1);
+    stackPush(f2 - f1);
 }
 
 void Interpreter::mul() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 * f1);
+    stackPush(f2 * f1);
 }
 
 void Interpreter::div() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 / f1);
+    stackPush(f2 / f1);
 }
 
 void Interpreter::pop(void *data) {
     if (data != 0) {
-        float *f = &stack.top();
+        float *f = stackTop();
         memcpy(data, f, 4);
     }
-    stack.pop();
+    stackPos-=4;
 }
 
 void Interpreter::less() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 < f1);
+    stackPush(f2 < f1);
 }
 
 void Interpreter::less_equal() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 <= f1);
+    stackPush(f2 <= f1);
 }
 
 void Interpreter::equal() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 == f1);
+    stackPush(f2 == f1);
 }
 
 void Interpreter::larger_equal() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 >= f1);
+    stackPush(f2 >= f1);
 }
 
 void Interpreter::larger() {
     float f1, f2;
     pop(&f1);
     pop(&f2);
-    stack.push(f2 > f1);
+    stackPush(f2 > f1);
 }
 
 void Interpreter::load() {
@@ -171,13 +176,23 @@ void Interpreter::_if() {
 }
 
 void Interpreter::incr() {
-    stack.top()++;
+    (*stackTop())++;
 }
 
 void Interpreter::decr() {
-    stack.top()--;
+    (*stackTop())--;
 }
 
 void Interpreter::mov(void *data) {
     memcpy(data, (void *) ((uintptr_t) data + 4), 4);
 }
+
+void Interpreter::stackPush(float f) {
+    stackPos+=4;
+    memcpy((void *) ((uintptr_t)stack + stackPos), &f, 4);
+}
+
+float *Interpreter::stackTop() {
+    return &((float*)stack)[stackPos];
+}
+

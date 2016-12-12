@@ -17,8 +17,8 @@ uint8_t op::POP = 0,
         op::IF = 14,
         op::INCR = 15,
         op::DECR = 16,
-        op::MOV = 17;
-
+        op::MOV = 17,
+        op::VAR = 18;
 
 std::map<std::string, uint8_t> op::ops;
 
@@ -41,4 +41,5 @@ void op::initMap() {
     ops["incr"] = INCR;
     ops["decr"] = DECR;
     ops["mov"] = MOV;
+    ops["var"] = VAR;
 }

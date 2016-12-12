@@ -6,6 +6,7 @@
 #include <vector>
 
 #define RES_SIZE 4096
+#define STACK_SIZE 4096
 
 class Interpreter {
     typedef void (Interpreter::*opFunc)(void *data);
@@ -21,16 +22,21 @@ class Interpreter {
 private:
     void *res;
     std::map<uint8_t, opFunc> operations;
-    std::stack<float> stack;
+    //std::stack<float> stack;
+    void* stack;
+    unsigned int stackPos = 0;
     std::vector<Call> callList;
     std::map<unsigned int, unsigned int> labels;
     unsigned int currentOp = 0;
     std::ifstream *s;
+    inline void* stackAt(unsigned int offset);
 public:
     Interpreter(std::ifstream &s);
     void load();
     void run();
     void setOpPos(unsigned int pos);
+    void stackPush(float f);
+    float *stackTop();
 
     void pop(void* data);
     void push(void* data);
