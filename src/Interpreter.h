@@ -26,7 +26,7 @@ private:
     void* stack;
     unsigned int stackPos = 0, resPos = 0;
     std::vector<Call> callList;
-    std::map<unsigned int, unsigned int> labels;
+//    std::map<unsigned int, unsigned int> labels;
     unsigned int currentOp = 0;
     std::ifstream *s;
     inline void* stackAt(int offset);
