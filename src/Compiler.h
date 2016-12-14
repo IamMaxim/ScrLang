@@ -6,8 +6,11 @@
 #define INTERPRETER_COMPILER_H
 
 
-class Compiler {
+#include <fstream>
 
+class Compiler {
+public:
+    void compile(std::ifstream &in, std::ofstream &out);
 };
 
 

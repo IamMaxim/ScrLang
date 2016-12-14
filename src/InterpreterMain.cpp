@@ -3,9 +3,9 @@
 #include "Utils.h"
 
 //#define I_DEBUG
-#define MEASURE_TIME
-#define MEASURE_TIME_MILLIS
-#define MEASURE_COUNT 1000000000
+//#define MEASURE_TIME
+//#define MEASURE_TIME_MILLIS
+//#define MEASURE_COUNT 1000000000
 
 int main(int argc, char *argv[]) {
     std::string filename;

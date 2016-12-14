@@ -5,7 +5,7 @@
 #include "Interpreter.h"
 #include "Utils.h"
 
-//#define I_DEBUG
+#define I_DEBUG
 
 Interpreter::Interpreter(std::ifstream &s) {
     this->s = &s;
@@ -22,8 +22,8 @@ Interpreter::Interpreter(std::ifstream &s) {
     operations[op::LESS] = (void (Interpreter::*)(void *)) &Interpreter::less;
     operations[op::LESS_EQUAL] = (void (Interpreter::*)(void *)) &Interpreter::less_equal;
     operations[op::EQUAL] = (void (Interpreter::*)(void *)) &Interpreter::equal;
-    operations[op::LARGER_EQUAL] = (void (Interpreter::*)(void *)) &Interpreter::larger_equal;
-    operations[op::LARGER] = (void (Interpreter::*)(void *)) &Interpreter::larger;
+    operations[op::GREATER_EQUAL] = (void (Interpreter::*)(void *)) &Interpreter::greater_equal;
+    operations[op::GREATER] = (void (Interpreter::*)(void *)) &Interpreter::greater;
     operations[op::GOTO] = &Interpreter::_goto;
     operations[op::IF] = (void (Interpreter::*)(void *)) &Interpreter::_if;
     operations[op::INCR] = (void (Interpreter::*)(void *)) &Interpreter::incr;
@@ -79,7 +79,7 @@ void Interpreter::print() {
     int pos = stackPos;
     std::cout << "^^^^^^stack^^^^^^\n";
     while (pos > 0) {
-        std::cout << *(float*)stackAt(pos) << '\n';
+        std::cout << *(float *) stackAt(pos) << '\n';
         pos -= 4;
     }
     std::cout << "^^^^^^^^^^^^^^^^^\n";
@@ -88,21 +88,27 @@ void Interpreter::print() {
 void Interpreter::sub() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 - f1);
 }
 
 void Interpreter::mul() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 * f1);
 }
 
 void Interpreter::div() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 / f1);
 }
 
@@ -116,55 +122,88 @@ void Interpreter::pop(void *data) {
 void Interpreter::less() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 < f1);
 }
 
 void Interpreter::less_equal() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 <= f1);
 }
 
 void Interpreter::equal() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 == f1);
 }
 
-void Interpreter::larger_equal() {
+void Interpreter::greater_equal() {
     float f1, f2;
     stackMov(&f1);
+    stackPos-=4;
     stackMov(&f2);
+    stackPos-=4;
     stackPush(f2 >= f1);
 }
 
-void Interpreter::larger() {
+void Interpreter::greater() {
     float f1, f2;
-    stackMov(&f1);
     stackMov(&f2);
-    stackPush(f2 > f1);
+    stackPos-=4;
+    stackMov(&f1);
+    stackPos-=4;
+    stackPush(f1 > f2);
 }
 
 void Interpreter::load() {
+    //load labels
     unsigned int curOp = 0;
     while (true) {
         uint8_t opcode;
         s->read((char *) &opcode, 1);
 
         if (!s->good())
-            return;
+            break;
 
         std::string str;
         getline(*s, str);
 
         if (opcode == op::LABEL) {
-#ifdef I_DEBUG
+            printf("loaded label: %i pointing to op#%i\n", *str.data(), curOp);
+            labels[*(unsigned int *) str.data()] = curOp;
+            continue;
+        }
+
+        curOp++;
+    }
+    s->clear();
+    s->seekg(0, std::ios::beg);
+
+    curOp = 0;
+    while (true) {
+        uint8_t opcode;
+        s->read((char *) &opcode, 1);
+
+        if (!s->good())
+            break;
+
+        std::string str;
+        getline(*s, str);
+
+        if (opcode == op::LABEL) {
+/*#ifdef I_DEBUG
             printf("loaded label: %i\n", *str.data());
 #endif
-            labels[*str.data()] = curOp;
+            labels[*str.data()] = curOp;*/
             continue;
         }
 
@@ -198,6 +237,7 @@ void Interpreter::_goto(void *data) {
 void Interpreter::_if() {
     float f;
     stackMov(&f);
+    stackPos-=4;
     if (f != 1)
         currentOp++;
 }

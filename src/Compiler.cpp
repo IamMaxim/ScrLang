@@ -3,3 +3,9 @@
 //
 
 #include "Compiler.h"
+
+void Compiler::compile(std::ifstream &in, std::ofstream &out) {
+    while (in.good()) {
+
+    }
+}

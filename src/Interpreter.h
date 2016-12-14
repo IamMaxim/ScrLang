@@ -50,8 +50,8 @@ public:
     void less();
     void less_equal();
     void equal();
-    void larger_equal();
-    void larger();
+    void greater_equal();
+    void greater();
     void _goto(void *data);
     void _if();
     void incr();
