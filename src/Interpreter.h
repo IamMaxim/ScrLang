@@ -20,16 +20,17 @@ class Interpreter {
         }
     };
 private:
-//    std::map<unsigned int, void*> vars;
+    //resources pointer
     void *res;
-    std::map<uint8_t, opFunc> operations;
+    //stack pointer
     void* stack;
-    unsigned int stackPos = 0, resPos = 0;
+    //all available operations
+    std::map<uint8_t, opFunc> operations;
+    unsigned int currentOp = 0, stackPos = 0;
+    //ordered list of all operations
     std::vector<Call> callList;
-//    std::map<unsigned int, unsigned int> labels;
-    unsigned int currentOp = 0;
+    //input file
     std::ifstream *s;
-    inline void* stackAt(int offset);
 public:
     Interpreter(std::ifstream &s);
     void load();
@@ -37,6 +38,7 @@ public:
     void setOpPos(unsigned int pos);
     void stackPush(float f);
     float *stackTop();
+    inline void* stackAt(int offset);
     inline void stackMov(float *ptr);
     void *varAt(unsigned int offset);
 
@@ -57,6 +59,5 @@ public:
     void incr();
     void decr();
     void mov(void *data);
-//    void var(void *id);
     void assign(void *data);
 };

@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <tic.h>
 #include "BytecodeTranslator.h"
 #include "Utils.h"
 #include "OpCodes.h"
@@ -29,7 +28,7 @@ void BytecodeTranslator::translate(std::ifstream &i, std::ofstream &o) {
     std::string comment("//");
     std::map<std::string, unsigned int> vars;
     std::map<std::string, unsigned int> labels;
-    unsigned int varOffset = 0, label = 0;
+    unsigned int varOffset = 0;
 
     unsigned int curOp = 0;
     //read all labels
