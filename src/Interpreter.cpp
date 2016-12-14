@@ -5,33 +5,7 @@
 #include "Interpreter.h"
 #include "Utils.h"
 
-inline void* Interpreter::stackAt(unsigned int offset) {
-    return (void *)((uintptr_t)stack + offset);
-}
-
-void Interpreter::add() {
-    float f1, f2;
-    pop(&f1);
-    pop(&f2);
-    stackPush(f2 + f1);
-}
-
-void Interpreter::push(void *data) {
-    float f;
-    memcpy(&f, data, 4);
-    stackPush(f);
-}
-
-void Interpreter::print() {
-    int pos = stackPos;
-    std::cout << "^^^^^^stack^^^^^^\n";
-    while (pos > 0) {
-        float f = *stackTop();
-        std::cout << f << '\n';
-        pos-=4;
-    }
-    std::cout << "^^^^^^^^^^^^^^^^^\n";
-}
+//#define I_DEBUG
 
 Interpreter::Interpreter(std::ifstream &s) {
     this->s = &s;
@@ -55,69 +29,122 @@ Interpreter::Interpreter(std::ifstream &s) {
     operations[op::INCR] = (void (Interpreter::*)(void *)) &Interpreter::incr;
     operations[op::DECR] = (void (Interpreter::*)(void *)) &Interpreter::decr;
     operations[op::MOV] = &Interpreter::mov;
+//    operations[op::VAR] = &Interpreter::var;
+    operations[op::ASSIGN] = &Interpreter::assign;
+}
+
+inline void *offset(void *data, int offset) {
+    return (void *) ((uintptr_t) data + offset);
+}
+
+inline void *Interpreter::stackAt(int offset) {
+    return (void *) ((uintptr_t) stack + offset);
+}
+
+inline void Interpreter::stackMov(float *ptr) {
+    memcpy(ptr, stackTop(), 4);
+}
+
+inline void *Interpreter::varAt(unsigned int offset) {
+    return (void *) ((uintptr_t) res + offset);
+}
+
+void Interpreter::add() {
+    float f1, f2;
+    stackMov(&f1);
+    stackPos -= 4;
+    stackMov(&f2);
+    stackPos -= 4;
+    stackPush(f2 + f1);
+}
+
+void Interpreter::push(void *data) {
+//    stackPush(*(float *) vars[(*(unsigned int *) data)]);
+    stackPush(*(float *) varAt((*(unsigned int *) data)));
+//    stackPush(*(float *) data);
+}
+
+void Interpreter::print() {
+/*    std::cout << "=====vars=====\n";
+    std::map<unsigned int, void *>::iterator it = vars.begin();
+    while (it != vars.end()) {
+        float f;
+        memcpy(&f, it->second, 4);
+        std::cout << it->first << " -> " << f << '\n';
+        it = std::next(it);
+    }
+
+    std::cout << "==============\n";*/
+
+    int pos = stackPos;
+    std::cout << "^^^^^^stack^^^^^^\n";
+    while (pos > 0) {
+        std::cout << *(float*)stackAt(pos) << '\n';
+        pos -= 4;
+    }
+    std::cout << "^^^^^^^^^^^^^^^^^\n";
 }
 
 void Interpreter::sub() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 - f1);
 }
 
 void Interpreter::mul() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 * f1);
 }
 
 void Interpreter::div() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 / f1);
 }
 
 void Interpreter::pop(void *data) {
     if (data != 0) {
-        float *f = stackTop();
-        memcpy(data, f, 4);
+        memcpy(varAt(*(unsigned int *) data), stackTop(), 4);
     }
-    stackPos-=4;
+    stackPos -= 4;
 }
 
 void Interpreter::less() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 < f1);
 }
 
 void Interpreter::less_equal() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 <= f1);
 }
 
 void Interpreter::equal() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 == f1);
 }
 
 void Interpreter::larger_equal() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 >= f1);
 }
 
 void Interpreter::larger() {
     float f1, f2;
-    pop(&f1);
-    pop(&f2);
+    stackMov(&f1);
+    stackMov(&f2);
     stackPush(f2 > f1);
 }
 
@@ -170,7 +197,7 @@ void Interpreter::_goto(void *data) {
 
 void Interpreter::_if() {
     float f;
-    pop(&f);
+    stackMov(&f);
     if (f != 1)
         currentOp++;
 }
@@ -184,15 +211,31 @@ void Interpreter::decr() {
 }
 
 void Interpreter::mov(void *data) {
-    memcpy(data, (void *) ((uintptr_t) data + 4), 4);
+    memcpy(varAt(*(unsigned int *) data), varAt(*(unsigned int *) offset(data, 4)), 4);
 }
 
 void Interpreter::stackPush(float f) {
-    stackPos+=4;
-    memcpy((void *) ((uintptr_t)stack + stackPos), &f, 4);
+#ifdef I_DEBUG
+    printf("pushing %f to stack\n", f);
+#endif
+    stackPos += 4;
+    memcpy(stackAt(stackPos), &f, 4);
 }
 
 float *Interpreter::stackTop() {
-    return &((float*)stack)[stackPos];
+    return (float *) stackAt(stackPos);
 }
 
+//void Interpreter::var(void *id) {
+//    vars[*((unsigned int *) id)] = offset(res, resPos);
+//    resPos += 4;
+//}
+
+void Interpreter::assign(void *data) {
+#ifdef I_DEBUG
+    printf("assigning %f to $%i\n",
+           *(float *) offset(data, 4),
+           *(unsigned int *) data);
+#endif
+    memcpy(varAt(*(unsigned int *) data), offset(data, 4), 4);
+}

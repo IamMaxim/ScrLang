@@ -39,7 +39,6 @@ int main(int argc, char *argv[]) {
     time = getCurrentTime() - time;
 #else
     time = clock() - time;
-    time /= CLOCKS_PER_SEC;
 #endif
     printf("completed %i iterations in %li\n", MEASURE_COUNT, time);
 #endif
